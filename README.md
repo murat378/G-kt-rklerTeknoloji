@@ -1,1 +1,1 @@
-# G-kt-rklerTeknoloji
+
