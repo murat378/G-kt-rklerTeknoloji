@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Göktürkler Teknoloji</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #020617, #0f172a);
+    color: white;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ORTA */
+.container {
+    text-align: center;
+}
+
+/* LOGOLAR */
+.logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.logos img {
+    height: 45px;
+    object-fit: contain;
+}
+
+/* BAŞLIK */
+.title {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* ALT METİN */
+.sub {
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+/* YÖNLENDİRME YAZISI */
+.redirect-text {
+    margin-top: 10px;
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+/* KAYAN YAZI */
+.marquee {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.marquee span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: kaydir 12s linear infinite;
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+@keyframes kaydir {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* PROGRESS */
+.bar {
+    position: absolute;
+    bottom: 20px;
+    width: 80%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #22c55e;
+    animation: load 7s linear forwards;
+}
+
+@keyframes load {
+    to { width: 100%; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <!-- LOGOLAR -->
+    <div class="logos">
+        <img src="gokturkler.png" alt="Göktürkler Logo">
+        <img src="yesilyurt.png" alt="Yeşilyurt Logo">
+    </div>
+
+    <!-- BAŞLIK -->
+    <div class="title">
+        🐺 GÖKTÜRKLER TEKNOLOJİ
+    </div>
+
+    <div class="sub">
+        Afet İletişim & Keşif Otonom Dronu
+    </div>
+
+    <!-- YENİ EKLENEN METİN -->
+    <div class="redirect-text">
+        Detaylı rapora yönlendiriliyorsunuz...
+    </div>
+
+</div>
+
+<!-- KAYAN YAZI -->
+<div class="marquee">
+    <span>
+        GÖKTÜRK RUHU • YOLOv12 • BLE ACİL SİSTEM • OTONOM UÇUŞ • MİLLİ TEKNOLOJİ • KARABÜK 2026
+    </span>
+</div>
+
+<!-- PROGRESS -->
+<div class="bar">
+    <div class="progress"></div>
+</div>
+
+<script>
+const pdfLink = "rapor.pdf";
+
+setTimeout(() => {
+    window.location.href = pdfLink;
+}, 7000);
+</script>
+
+</body>
+</html>
