@@ -59,6 +59,7 @@ body {
     max-width: 550px;
     width: 90%;
     box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    transition: opacity 0.3s ease;
 }
 
 /* LOGOLAR - HAREKETLİ + HOVER EFEKTİ */
@@ -82,14 +83,13 @@ body {
     border: 1px solid transparent;
 }
 
-/* HOVER EFEKTİ - imleç üstüne gelince */
 .logo-wrapper:hover {
     transform: scale(1.12) translateY(-4px);
     background: rgba(34, 197, 94, 0.12);
     border: 1px solid rgba(34, 197, 94, 0.4);
     box-shadow: 0 0 30px rgba(34, 197, 94, 0.4), 0 8px 20px rgba(0,0,0,0.5);
     filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.3));
-    animation-play-state: paused;  /* hover anında float animasyonu durur */
+    animation-play-state: paused;
 }
 
 .logo-wrapper:first-child {
@@ -105,7 +105,6 @@ body {
     100% { transform: translateY(-6px); }
 }
 
-/* Göktürkler logosu BÜYÜK */
 .logo-wrapper:first-child img {
     height: 70px;
     width: auto;
@@ -114,7 +113,6 @@ body {
     transition: all 0.2s ease;
 }
 
-/* Yeşilyurt logosu */
 .logo-wrapper:last-child img {
     height: 55px;
     width: auto;
@@ -123,7 +121,6 @@ body {
     transition: all 0.2s ease;
 }
 
-/* Hover'da logo içi de hafif parlar */
 .logo-wrapper:hover img {
     filter: brightness(1.1) contrast(1.05);
 }
@@ -182,6 +179,13 @@ body {
     box-shadow: 0 0 35px #22c55e;
     transform: scale(1.02);
     border-color: #ffffff;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 /* KAYAN YAZI */
@@ -250,6 +254,123 @@ body {
     color: #a7f3d0;
     pointer-events: none;
 }
+
+/* ========== YÜKLEME EKRANI (OVERLAY) ========== */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 22, 40, 0.95);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.loading-overlay.show {
+    display: flex;
+    opacity: 1;
+}
+
+.loading-content {
+    text-align: center;
+    max-width: 400px;
+    width: 80%;
+}
+
+.loading-icon {
+    margin-bottom: 30px;
+    animation: pulse 1.5s infinite;
+}
+
+.loading-icon svg {
+    width: 70px;
+    height: 70px;
+    filter: drop-shadow(0 0 20px #22c55e);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.08); opacity: 1; }
+}
+
+.loading-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #fff;
+    text-shadow: 0 0 15px #22c55e;
+    letter-spacing: 2px;
+}
+
+.loading-sub {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 30px;
+    color: #bbf7d0;
+}
+
+/* Yükleme çubuğu */
+.loading-bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.loading-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #22c55e, #4ade80, #22c55e);
+    background-size: 200% 100%;
+    border-radius: 20px;
+    box-shadow: 0 0 15px #22c55e;
+    transition: width 0.08s linear;
+    animation: barShimmer 1.5s infinite;
+}
+
+@keyframes barShimmer {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.loading-percent {
+    font-size: 18px;
+    font-weight: 700;
+    color: #4ade80;
+    text-shadow: 0 0 10px #22c55e;
+    letter-spacing: 2px;
+}
+
+.loading-status {
+    margin-top: 25px;
+    font-size: 12px;
+    opacity: 0.5;
+    color: #a7f3d0;
+    min-height: 20px;
+}
+
+/* Dönen noktalar animasyonu */
+.dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+}
 </style>
 
 </head>
@@ -259,9 +380,10 @@ body {
 <div class="bg-glow"></div>
 <div class="grid-overlay"></div>
 
-<div class="container">
+<!-- ANA İÇERİK -->
+<div class="container" id="mainContainer">
 
-    <!-- LOGOLAR - HOVER EFEKTLİ -->
+    <!-- LOGOLAR -->
     <div class="logos">
         <div class="logo-wrapper">
             <img src="gokturkler.png" alt="Göktürkler Logo">
@@ -303,12 +425,127 @@ body {
 
 <div class="note">Karabük • 2026</div>
 
+<!-- ========== YÜKLEME EKRANI ========== -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="loading-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round"/>
+                <circle cx="12" cy="12" r="2" fill="#4ade80" opacity="0.6">
+                    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+        
+        <div class="loading-title">
+            Rapor Hazırlanıyor
+        </div>
+        <div class="loading-sub">
+            Göktürkler Teknoloji Kulübü
+        </div>
+        
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+        
+        <div class="loading-percent" id="loadingPercent">%0</div>
+        
+        <div class="loading-status" id="loadingStatus">
+            Sistem başlatılıyor<span class="dots"></span>
+        </div>
+    </div>
+</div>
+
 <script>
     const pdfLink = "rapor.pdf";
+    const raporBtn = document.getElementById('raporBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const mainContainer = document.getElementById('mainContainer');
+    const loadingBar = document.getElementById('loadingBar');
+    const loadingPercent = document.getElementById('loadingPercent');
+    const loadingStatus = document.getElementById('loadingStatus');
 
-    document.getElementById('raporBtn').addEventListener('click', function() {
-        window.location.href = pdfLink;
+    // Durum mesajları
+    const statusMessages = [
+        "Sistem başlatılıyor",
+        "Veriler hazırlanıyor",
+        "Rapor oluşturuluyor",
+        "PDF hazırlanıyor",
+        "Neredeyse tamam"
+    ];
+
+    let progressInterval;
+    let statusInterval;
+    let progress = 0;
+
+    function startLoading() {
+        // Butonu devre dışı bırak
+        raporBtn.disabled = true;
+        
+        // Overlay'i göster
+        loadingOverlay.classList.add('show');
+        
+        // Progress değerini sıfırla
+        progress = 0;
+        loadingBar.style.width = '0%';
+        loadingPercent.textContent = '%0';
+        loadingStatus.innerHTML = 'Sistem başlatılıyor<span class="dots"></span>';
+        
+        // Progress bar animasyonu
+        progressInterval = setInterval(() => {
+            // Hızlı başla, yavaş bitir (gerçekçi yükleme hissi)
+            if (progress < 30) {
+                progress += 2.5;
+            } else if (progress < 60) {
+                progress += 1.5;
+            } else if (progress < 85) {
+                progress += 0.8;
+            } else if (progress < 98) {
+                progress += 0.3;
+            } else {
+                progress = 99; // 100'de takılı kalmasın diye
+            }
+            
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(progressInterval);
+            }
+            
+            loadingBar.style.width = progress + '%';
+            loadingPercent.textContent = '%' + Math.floor(progress);
+            
+            // 100 olunca yönlendir
+            if (progress >= 99.5) {
+                setTimeout(() => {
+                    window.location.href = pdfLink;
+                }, 200);
+            }
+        }, 60);
+        
+        // Durum mesajlarını değiştir
+        let statusIndex = 0;
+        statusInterval = setInterval(() => {
+            if (progress < 95) {
+                statusIndex = (statusIndex + 1) % statusMessages.length;
+                loadingStatus.innerHTML = statusMessages[statusIndex] + '<span class="dots"></span>';
+            } else if (progress >= 95) {
+                loadingStatus.innerHTML = 'Rapor açılıyor ✨';
+                clearInterval(statusInterval);
+            }
+        }, 700);
+    }
+
+    // Butona tıklayınca yükleme başlasın
+    raporBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        startLoading();
     });
+
+    // Sayfa yüklendiğinde hazır
+    console.log('Göktürkler Teknoloji - Yükleme ekranı hazır');
 </script>
 
 </body>
