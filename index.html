@@ -262,7 +262,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(10, 22, 40, 0.95);
+    background: rgba(10, 22, 40, 0.98);
     backdrop-filter: blur(12px);
     z-index: 1000;
     display: none;
@@ -463,7 +463,6 @@ body {
     const pdfLink = "rapor.pdf";
     const raporBtn = document.getElementById('raporBtn');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const mainContainer = document.getElementById('mainContainer');
     const loadingBar = document.getElementById('loadingBar');
     const loadingPercent = document.getElementById('loadingPercent');
     const loadingStatus = document.getElementById('loadingStatus');
@@ -474,14 +473,20 @@ body {
         "Veriler hazırlanıyor",
         "Rapor oluşturuluyor",
         "PDF hazırlanıyor",
-        "Neredeyse tamam"
+        "Rapor açılıyor"
     ];
 
     let progressInterval;
     let statusInterval;
     let progress = 0;
+    let redirectTimeout;
 
     function startLoading() {
+        // Önceki timeout varsa temizle
+        if (redirectTimeout) {
+            clearTimeout(redirectTimeout);
+        }
+        
         // Butonu devre dışı bırak
         raporBtn.disabled = true;
         
@@ -494,36 +499,40 @@ body {
         loadingPercent.textContent = '%0';
         loadingStatus.innerHTML = 'Sistem başlatılıyor<span class="dots"></span>';
         
+        // Önceki interval'ları temizle
+        if (progressInterval) clearInterval(progressInterval);
+        if (statusInterval) clearInterval(statusInterval);
+        
         // Progress bar animasyonu
         progressInterval = setInterval(() => {
-            // Hızlı başla, yavaş bitir (gerçekçi yükleme hissi)
             if (progress < 30) {
-                progress += 2.5;
+                progress += 3;
             } else if (progress < 60) {
-                progress += 1.5;
+                progress += 2.5;
             } else if (progress < 85) {
-                progress += 0.8;
-            } else if (progress < 98) {
-                progress += 0.3;
-            } else {
-                progress = 99; // 100'de takılı kalmasın diye
+                progress += 1.5;
+            } else if (progress < 100) {
+                progress += 1;
             }
             
             if (progress >= 100) {
                 progress = 100;
+                loadingBar.style.width = '100%';
+                loadingPercent.textContent = '%100';
+                loadingStatus.innerHTML = 'Rapor açılıyor ✓';
                 clearInterval(progressInterval);
+                clearInterval(statusInterval);
+                
+                // 100 olunca 0.5 saniye sonra yönlendir
+                redirectTimeout = setTimeout(() => {
+                    window.location.href = pdfLink;
+                }, 500);
+                return;
             }
             
             loadingBar.style.width = progress + '%';
             loadingPercent.textContent = '%' + Math.floor(progress);
-            
-            // 100 olunca yönlendir
-            if (progress >= 99.5) {
-                setTimeout(() => {
-                    window.location.href = pdfLink;
-                }, 200);
-            }
-        }, 60);
+        }, 50);
         
         // Durum mesajlarını değiştir
         let statusIndex = 0;
@@ -531,11 +540,8 @@ body {
             if (progress < 95) {
                 statusIndex = (statusIndex + 1) % statusMessages.length;
                 loadingStatus.innerHTML = statusMessages[statusIndex] + '<span class="dots"></span>';
-            } else if (progress >= 95) {
-                loadingStatus.innerHTML = 'Rapor açılıyor ✨';
-                clearInterval(statusInterval);
             }
-        }, 700);
+        }, 600);
     }
 
     // Butona tıklayınca yükleme başlasın
@@ -545,7 +551,7 @@ body {
     });
 
     // Sayfa yüklendiğinde hazır
-    console.log('Göktürkler Teknoloji - Yükleme ekranı hazır');
+    console.log('Göktürkler Teknoloji - Yükleme ekranı aktif');
 </script>
 
 </body>
